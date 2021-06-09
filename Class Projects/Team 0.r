@@ -17,7 +17,11 @@ data<-data[,-c(6,7,8,9,10,16,17)]
 View(data)
 colnames(data)[2:10]<- c("ISOCODE","Region","CPI.score","Ranking","EcoIUCR","GICRiskR","PRSRiskG",
                         "VarDemoP","WEcoForum")
-
+attach(data)
+data<-transform(data, Region=as.factor(Region),CPI.score=as.numeric(CPI.score),
+                Ranking=as.numeric(Ranking),EcoIUCR=as.numeric(EcoIUCR),GICRiskR=as.numeric(GICRiskR),
+                PRSRiskG=as.numeric(PRSRiskG),VarDemoP=as.numeric(VarDemoP),
+                WEcoForum=as.numeric(WEcoForum))
 #exploración de las variables
 lm.prueba<-lm(EN.ATM.CO2E.PC~ CPI.score+EcoIUCR+GICRiskR+VarDemoP, data=data)
 summary(lm.prueba)
