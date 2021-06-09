@@ -13,7 +13,7 @@ data.2<-data.2[,good.vars]
 data.2<-data.2[-c(1,2,15,30,110,146),]
 data.3<-data.2[order(match(data.2$...2,data$iso_code3)),]
 data<-cbind(data.3,data)
-data<-data[,-c(6,7,8,9,10,16,17)]
+data<-data[-c(55,79),-c(6,7,8,9,10,16,17)]
 View(data)
 colnames(data)[2:10]<- c("ISOCODE","Region","CPI.score","Ranking","EcoIUCR","GICRiskR","PRSRiskG",
                         "VarDemoP","WEcoForum")
@@ -23,39 +23,35 @@ data<-transform(data, Region=as.factor(Region),CPI.score=as.numeric(CPI.score),
                 PRSRiskG=as.numeric(PRSRiskG),VarDemoP=as.numeric(VarDemoP),
                 WEcoForum=as.numeric(WEcoForum))
 #exploración de las variables
-lm.prueba<-lm(EN.ATM.CO2E.PC~ CPI.score+EcoIUCR+GICRiskR+VarDemoP, data=data)
+lm.prueba<-lm(EN.ATM.CO2E.PC~ CPI.score+EcoIUCR+IT.CEL.SETS.P2+AG.LND.FRST.K2, data=data)
 summary(lm.prueba)
-#
-#busqueda de variables con mayor significancia.
-data3<-data2[,1:17]
-lm.prueba<-lm(EN.ATM.CO2E.PC~ .-iso_code3-country, data=data3)
-summary(lm.prueba)
-data4<-data2[,18:25]
-lm.prueba2<-lm(EN.ATM.CO2E.PC~ CPI.score.2020, data=data2)
-summary(lm.prueba2)
-summary(data2$EN.ATM.CO2E.PC)
+
+
+
 #regresión logistica
+
 CO2.bi<- rep(1,length(EN.ATM.CO2E.PC))
 CO2.bi[EN.ATM.CO2E.PC<median(EN.ATM.CO2E.PC)]=0
-data2.bi <- data.frame(data2,CO2.bi)
+data.bi <- data.frame(data,CO2.bi)
+CO2.bi
 #datos de prueba y de ensayo.
-Entre<-(1:9)
+entre<-(1:(174/2))
 
-prueba<- (10:18)
+prueba<- ((174/2)+1):(length(data))
+prueba
 
-data.prueba<-data2.bi[prueba,]
+data.prueba<-data.bi[prueba,]
 
 #reg logistica
-glm.1<-glm(CO2.bi~CPI.score.2020+ a_water+a_education+a_energy+a_environment+
-             a_water+m_economy.wide+IT.CEL.SETS.P2+AG.LND.FRST.K2, 
-           data=data2.bi,family=binomial,subset=Entre)
+glm.1<-glm(CO2.bi~ CPI.score+EcoIUCR+IT.CEL.SETS.P2+AG.LND.FRST.K2, 
+           data=data.bi,family=binomial,subset=entre)
 summary(glm.1)
 
 #Ahora se creara la matriz de confusión
 glm.prob<-predict(glm.1, data.prueba ,type="response")
 glm.pre<-rep(1,length(glm.prob))
 glm.pre[glm.prob<0.5]=0
-table(glm.pre, data.prueba$CO2)
+table(glm.pre, data.prueba$CO2.bi)
 mean(glm.pre!=data.prueba$CO2.bi)
 
 #validación cruzada:
