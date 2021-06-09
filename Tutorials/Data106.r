@@ -1,5 +1,5 @@
 #This script estimates a linear model using the model data table
- dir.data<-"C:\\Users\\Usuario\\OneDrive\\Edmundo-ITESM\\3.Proyectos\\41. Climate Change and AI\\Data\\Model\\"
+ dir.data<-"//Users//ivanlomeli//Documents//R//Climate-Change-and-AI//Data//Model/"
  data<-read.csv(paste0(dir.data,"ModelData.csv"))
 
 ##let's look at the data first,
@@ -16,9 +16,10 @@
   ids<-c("iso_code3","country")
   response<-"EN.ATM.CO2E.PC"
   predictors<-subset(colnames(data),!(colnames(data)%in%c(ids,response,bad.vars)))
-
+predictors
 #estimate full model
  data.model<-data[,c(response,predictors)]
+ data.model
  model<-as.formula(paste0(response,"~",paste(predictors,collapse="+")))
  full.model <- lm(model, data = data.model)
  summary(full.model)
@@ -58,9 +59,9 @@
 #now how do we select which model is best
 
 predict.regsubsets <-function (object, model ,newdata ,id ){
-#  object<-regfit.best
-#  newdata<-data.model[test ,]
-#  id<-4
+  #object<-regfit.best
+  #newdata<-data.model[test ,]
+  #id<-1
   form<-model
   options(na.action='na.pass')
   mat<-model.matrix (form,newdata )
